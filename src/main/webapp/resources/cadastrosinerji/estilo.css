@@ -1,0 +1,36 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #ffffff;
+    color: #000000;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #020B2A;
+    padding: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid #00A3E0;
+}
+
+header img {
+    max-height: 80px;
+    width: auto;
+    margin-left: 20px;
+}
+
+h1 {
+    font-size: 36px;
+    color: #ffffff;
+    margin-right: 20px;
+}
+
+footer {
+    background-color: #0B1530;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+}
