@@ -52,8 +52,8 @@
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.2.3.Final</version>
+            <artifactId>hibernate-core</artifactId>
+            <version>5.2.4.Final</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -61,8 +61,11 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.36</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
-
-
 </project>
