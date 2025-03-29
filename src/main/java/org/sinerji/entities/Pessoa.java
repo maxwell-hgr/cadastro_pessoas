@@ -7,9 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 
 
@@ -27,14 +26,12 @@ public class Pessoa implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(length = 150)
     private String nome;
+    private Date dataNascimento;
 
-    @NotNull
-    @Past
-    @Column(nullable = false, name = "data_nascimento")
-    private LocalDate dataNascimento;
-
-    private String sexo;
+    @Column(length = 2)
+    private EnumGenero genero;
 
     @NotNull
     @ManyToOne

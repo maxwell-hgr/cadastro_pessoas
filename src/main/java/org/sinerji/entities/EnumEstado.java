@@ -1,6 +1,6 @@
 package org.sinerji.entities;
 
-public enum Estados {
+public enum EnumEstado {
     AC("Acre"),
     AL("Alagoas"),
     AP("Amapá"),
@@ -31,7 +31,7 @@ public enum Estados {
 
     private final String nome;
 
-    Estados(String nome) {
+    EnumEstado(String nome) {
         this.nome = nome;
     }
 

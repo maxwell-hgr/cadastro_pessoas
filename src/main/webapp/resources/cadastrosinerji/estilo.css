@@ -3,7 +3,7 @@ body {
     background-color: #ffffff;
     color: #000000;
     margin: 0;
-    padding: 0;
+    padding: 0px;
 }
 
 header {
@@ -33,4 +33,8 @@ footer {
     text-align: center;
     padding: 10px;
     font-size: 14px;
+}
+
+#container{
+    padding: 20px;
 }

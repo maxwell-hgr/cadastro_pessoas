@@ -25,7 +25,7 @@ public class Endereco implements Serializable {
     private int id;
 
     @Enumerated(EnumType.STRING)
-    private Estados estado;
+    private EnumEstado estado;
 
     private String cidade;
     private String logradouro;
