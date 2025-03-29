@@ -20,8 +20,7 @@ public class PessoaRepository implements Serializable {
     }
 
     public Pessoa guardar(Pessoa pessoa) {
-        em.merge(pessoa);
-        return pessoa;
+        return em.merge(pessoa);
     }
 
     public void remover(Pessoa pessoa) {

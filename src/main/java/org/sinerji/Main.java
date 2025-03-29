@@ -2,6 +2,8 @@ package org.sinerji;
 
 import org.sinerji.entities.Endereco;
 import org.sinerji.entities.Pessoa;
+import org.sinerji.repositories.EnderecoRepository;
+import org.sinerji.repositories.PessoaRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -14,20 +16,33 @@ public class Main {
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
 
+        PessoaRepository pessoaRepository = new PessoaRepository(em);
+        EnderecoRepository enderecoRepository = new EnderecoRepository(em);
+
+        Endereco endereco = new Endereco();
+        endereco.setCep("72510-418");
+        endereco = enderecoRepository.guardar(endereco);
+
+        Endereco endereco2 = new Endereco();
+        endereco2.setCep("72510-419");
+        endereco2 = enderecoRepository.guardar(endereco2);
 
         Pessoa pessoa = new Pessoa();
-        pessoa.setNome("Sinerji");
         pessoa.setDataNascimento(LocalDate.now());
-        Endereco endereco = new Endereco();
-        endereco.setLogradouro("Logradouro");
-        endereco.setCep("72510-418");
+        pessoa.setNome("Sinerji");
+        pessoa.setEndereco(endereco);
 
-        em.persist(pessoa);
-        em.persist(endereco);
+        pessoa = pessoaRepository.guardar(pessoa);
+
+        System.out.println("ID da pessoa: " + pessoa.getId());
+
+        pessoa.setEndereco(endereco2);
+        pessoaRepository.guardar(pessoa);
+
+        pessoa.setEndereco(endereco);
+        pessoaRepository.guardar(pessoa);
+
         em.getTransaction().commit();
-
-        System.out.println(endereco);
-
         em.close();
         emf.close();
     }

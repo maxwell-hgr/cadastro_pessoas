@@ -20,8 +20,7 @@ public class EnderecoRepository implements Serializable {
     }
 
     public Endereco guardar(Endereco endereco) {
-        em.merge(endereco);
-        return endereco;
+        return em.merge(endereco);
     }
 
     public void remover(Endereco endereco) {

@@ -37,7 +37,7 @@ public class Pessoa implements Serializable {
     private String sexo;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne
     @JoinColumn(name = "endereco_id")
     private Endereco endereco;
 
