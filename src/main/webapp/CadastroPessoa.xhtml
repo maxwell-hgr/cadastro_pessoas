@@ -1,19 +1,59 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
 >
 <h:head>
     <meta charset="UTF-8"/>
     <title>Cadastro Pessoa - SINERJI</title>
     <h:outputStylesheet library="cadastrosinerji" name="estilo.css"/>
 </h:head>
-<body>
+<h:body>
 <header>
     <h:graphicImage library="cadastrosinerji" name="logo.png"/>
 </header>
-<h:outputText value="Olá!"/>
+<div id="container">
+    <h:form>
+        <h:panelGrid columns="2">
+            <h:outputLabel value="Nome: "  for="nome"/>
+            <h:inputText id="nome" />
+            <h:outputLabel value="Data de Nascimento: " for="nascimento"/>
+            <h:inputText id="nascimento" />
+            <h:outputLabel value="Sexo: " for="sexo"/>
+            <h:selectOneMenu id="sexo">
+                <f:selectItem itemLabel="MASCULINO" itemValue="MASCULINO"/>
+                <f:selectItem itemLabel="FEMININO" itemValue="FEMININO"/>
+            </h:selectOneMenu>
+
+            <h:outputLabel />
+
+            <h:commandButton value="Salvar"/>
+        </h:panelGrid>
+    </h:form>
+
+    <h:dataTable value="#{[0]}">
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Nome"/>
+            </f:facet>
+            <h:outputText value="Sinerji"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Nascimento"/>
+            </f:facet>
+            <h:outputText value="25/06/2001"/>
+        </h:column>
+        <h:column>
+            <f:facet name="header">
+                <h:outputText value="Sexo"/>
+            </f:facet>
+            <h:outputText value="MASCULINO"/>
+        </h:column>
+    </h:dataTable>
+</div>
 <footer>
     Sinerji Instituto de Pesquisa e Desenvolvimento Tecnológico e Empresarial Ltda.
 </footer>
-</body>
+</h:body>
 </html>
