@@ -14,12 +14,7 @@ public class EnderecoService implements Serializable {
     private EnderecoRepository enderecoRepository;
 
     @Transacional
-    public void salvar(Endereco endereco) {
-        enderecoRepository.guardar(endereco);
-    }
-
-    @Transacional
-    public void remover(Endereco endereco) {
-        enderecoRepository.remover(endereco);
+    public Endereco salvar(Endereco endereco) {
+        return enderecoRepository.buscarEnderecoExistente(endereco);
     }
 }

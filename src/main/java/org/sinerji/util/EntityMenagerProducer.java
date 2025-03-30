@@ -8,6 +8,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
+/*
+    fábrica de entitymanager com escopo de aplicação para que exista apenas essa fábrica
+*/
+
 @ApplicationScoped
 public class EntityMenagerProducer {
 

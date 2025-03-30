@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @InterceptorBinding
 public @interface Transacional {
-
+    // classe referente ao CDI do tomcat -> configura aspectos importantes da injeção
 }

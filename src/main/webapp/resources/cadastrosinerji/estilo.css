@@ -36,3 +36,36 @@ header h1 {
 #container {
     padding: 20px;
 }
+
+.custom-dialog {
+    border-radius: 10px;
+    padding: 15px;
+}
+
+.custom-container {
+    display: flex;
+    gap: 20px;
+}
+
+.custom-fieldset {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.custom-panel-grid {
+    width: 100%;
+    border-spacing: 10px;
+}
+
+.custom-panel-grid td {
+    padding: 5px;
+}
+
+.ui-dialog {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+

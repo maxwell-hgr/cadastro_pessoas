@@ -10,6 +10,11 @@ import javax.persistence.EntityTransaction;
 import javax.annotation.Priority;
 import javax.inject.Inject;
 
+/*
+    define que sempre que um method ou class for anotado com @transacional o invoke deve ser acionado
+    trazendo consigo um entity manager para realizar a transação JPA
+*/
+
 @Interceptor
 @Transacional
 @Priority(Interceptor.Priority.APPLICATION)
@@ -48,5 +53,4 @@ public class TransacionalInterceptor implements Serializable {
             }
         }
     }
-
 }

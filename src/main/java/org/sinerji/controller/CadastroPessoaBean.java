@@ -8,14 +8,20 @@ import org.sinerji.entities.EnumGenero;
 import org.sinerji.entities.Pessoa;
 import org.sinerji.repositories.EnderecoRepository;
 import org.sinerji.repositories.PessoaRepository;
-import org.sinerji.services.EnderecoService;
 import org.sinerji.services.PessoaService;
 import org.sinerji.util.FacesMessages;
+
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
 import java.util.List;
+
+/*
+* ao anotar com named, fazemos com que a instancia do bean fique disponível no expression language do jsf (#{})
+* a anotação de escopo define o tempo de vida dessa instância
+* */
+
 
 @Setter
 @Getter
@@ -29,16 +35,13 @@ public class CadastroPessoaBean implements Serializable {
     private PessoaRepository pessoaRepository;
 
     @Inject
+    private PessoaService pessoaService;
+
+    @Inject
     private EnderecoRepository enderecoRepository;
 
     @Inject
     private FacesMessages facesMessages;
-
-    @Inject
-    private PessoaService pessoaService;
-
-    @Inject
-    private EnderecoService enderecoService;
 
     private Pessoa pessoa;
     private Endereco endereco;
@@ -47,12 +50,13 @@ public class CadastroPessoaBean implements Serializable {
     private String query;
 
     public void salvar() {
-            pessoa.setEndereco(endereco);
+            // evitando que um endereço existente seja salvo no banco de dados como outro registro
+            Endereco existente = enderecoRepository.buscarEnderecoExistente(endereco);
+            pessoa.setEndereco(existente != null ? existente : endereco);
+
             pessoaService.salvar(pessoa);
 
             buscarTodos();
-
-            facesMessages.info("Pessoa cadastrada com sucesso!");
     }
 
     public void excluir() {
@@ -61,7 +65,7 @@ public class CadastroPessoaBean implements Serializable {
 
         buscarTodos();
 
-        facesMessages.info("Pessoa excluída com sucesso!");
+        facesMessages.info("Registro excluido com sucesso!");
     }
 
 
@@ -84,9 +88,5 @@ public class CadastroPessoaBean implements Serializable {
 
     public EnumEstado[] getEstados() {
         return EnumEstado.values();
-    }
-
-    public boolean getPessoaSelecionada() {
-        return pessoa != null;
     }
 }

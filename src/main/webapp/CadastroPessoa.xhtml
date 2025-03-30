@@ -1,14 +1,24 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                template="/WEB-INF/template/Layout.xhtml">
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Cadastro Pessoa - SINERJI</title>
+    <h:outputStylesheet library="cadastrosinerji" name="estilo.css"/>
+</h:head>
+<h:body>
+    <header>
+        <div class="header-content">
+            <h:graphicImage library="cadastrosinerji" name="logo.png" styleClass="logo"/>
+            <h1>Sinerji Instituto de Pesquisa e Desenvolvimento Tecnológico e Empresarial Ltda.</h1>
+        </div>
+    </header>
+    <div id="container">
+        <h2>REGISTRO DE PESSOAS</h2>
 
-    <ui:define name="titulo">Cadastro de Pessoas</ui:define>
-
-    <ui:define name="container">
         <f:metadata>
             <f:viewAction action="#{cadastroPessoaBean.buscarTodos}"/>
         </f:metadata>
@@ -17,9 +27,10 @@
 
             <p:toolbar id="toolbar" style="display: flex; justify-content: center; align-items: center;">
                 <f:facet name="left">
-                    <p:inputText id="query" placeholder="Procurar por nome ou cep"
+                    <p:inputText id="query" placeholder="Procurar por nome"
                                  style="width: 300px; margin: 0 15px;"
-                                 value="#{cadastroPessoaBean.query}"/>
+                                 value="#{cadastroPessoaBean.query}"
+                                 autocomplete="off"/>
                 </f:facet>
 
                 <f:facet name="right">
@@ -47,15 +58,21 @@
                 </p:column>
 
                 <p:column headerText="Data de Nascimento">
-                    <h:outputText value="#{pessoa.dataNascimento}"/>
+                    <h:outputText value="#{pessoa.dataNascimento}" converter="dataNascimentoConverter"/>
                 </p:column>
 
                 <p:column headerText="Sexo">
                     <h:outputText value="#{pessoa.genero.genero}"/>
                 </p:column>
 
-                <p:column headerText="Endereço">
-                    <h:outputText value="Endereço"/>
+                <p:column headerText="Endereço" style="width:120px;text-align:center">
+                    <p:commandButton icon="pi pi-map-marker" title="Ver Endereço Completo"
+                                     styleClass="ui-button-info"
+                                     oncomplete="PF('enderecoDialogWidgetVar').show()"
+                                     update=":mainForm:enderecoDialog">
+                        <f:setPropertyActionListener value="#{pessoa.endereco}"
+                                                     target="#{cadastroPessoaBean.pessoa.endereco}" />
+                    </p:commandButton>
                 </p:column>
 
                 <p:column headerText="Ações" style="width:120px;text-align:center">
@@ -64,15 +81,14 @@
                                      update=":mainForm:pessoaDialog" process="@this">
                         <f:setPropertyActionListener value="#{pessoa}"
                                                      target="#{cadastroPessoaBean.pessoa}" />
-                        <f:setPropertyActionListener value="#{pessoa.endereco}"
-                                                     target="#{cadastroPessoaBean.endereco}" />
                         <p:resetInput target=":mainForm:pessoaDialog" />
                     </p:commandButton>
 
                     <p:commandButton icon="pi pi-trash" title="Excluir"
                                      style="background-color: red; border-color: red; margin-left:5px"
-                                     update="mainForm:facesMessages pessoaDT" process="@this"
-                                     actionListener="#{cadastroPessoaBean.excluir}">
+                                     update=":mainForm:facesMessages :mainForm:pessoaDT"
+                                     action="#{cadastroPessoaBean.excluir}"
+                                     process="@this">
                         <f:setPropertyActionListener value="#{pessoa}"
                                                      target="#{cadastroPessoaBean.pessoa}" />
                     </p:commandButton>
@@ -80,64 +96,120 @@
             </p:dataTable>
 
             <p:dialog id="pessoaDialog" header="DADOS DE PESSOA" widgetVar="pessoaDialogWidgetVar" modal="true"
-                      resizable="false" closeOnEscape="true">
-                <p:messages id="dialogMessages"/>
+                      resizable="false" closeOnEscape="true" styleClass="custom-dialog">
+
+                <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
 
                 <p:defaultCommand target="salvarCB" scope="pessoaDialog"/>
 
-                <p:panelGrid id="pessoaPG" columns="2" style="width:100%"
-                             rendered="#{cadastroPessoaBean.pessoa ne null}">
-                    <p:outputLabel value="Nome:" for="nome"/>
-                    <p:inputText id="nome" value="#{cadastroPessoaBean.pessoa.nome}" required="true" size="120"/>
+                <h:panelGroup layout="block" rendered="#{cadastroPessoaBean.pessoa ne null}" styleClass="custom-container">
+                    <p:fieldset legend="Dados Pessoais" styleClass="custom-fieldset">
+                        <p:panelGrid id="pessoaPG" columns="2" styleClass="custom-panel-grid">
 
-                    <p:outputLabel value="Data Nasc.:" for="dataNascimento"/>
-                    <h:panelGroup>
-                        <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.pessoa.dataNascimento}"
-                                    pattern="dd/MM/yyyy" mask="99/99/9999" required="true"
-                                    converter="dataNascimentoConverter"/>
-                        <p:message for="dataNascimento"/>
-                    </h:panelGroup>
+                            <p:outputLabel value="Nome:" for="nome"/>
+                            <h:panelGroup>
+                                <p:inputText id="nome" value="#{cadastroPessoaBean.pessoa.nome}" required="true" size="50"/>
+                                <p:message for="nome"/>
+                            </h:panelGroup>
 
-                    <p:outputLabel value="Sexo:" for="sexo"/>
-                    <p:selectOneMenu id="sexo" required="true" value="#{cadastroPessoaBean.pessoa.genero}" size="30">
-                        <f:selectItem itemLabel="Selecione..."/>
-                        <f:selectItems value="#{cadastroPessoaBean.generos}"
-                                       var="enumGenero"
-                                       itemLabel="#{enumGenero.genero}"
-                                       itemValue="#{enumGenero}"/>
-                    </p:selectOneMenu>
+                            <p:outputLabel value="Data Nasc.:" for="dataNascimento"/>
+                            <h:panelGroup>
+                                <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.pessoa.dataNascimento}"
+                                            pattern="dd/MM/yyyy" mask="99/99/9999" required="true"
+                                            converter="dataNascimentoConverter"/>
+                                <p:message for="dataNascimento"/>
+                            </h:panelGroup>
 
-                    <p:outputLabel value="UF:" for="estado"/>
-                    <p:selectOneMenu id="estado" required="true" value="#{cadastroPessoaBean.endereco.estado}">
-                        <f:selectItem itemLabel="Selecione..."/>
-                        <f:selectItems value="#{cadastroPessoaBean.estados}"
-                                       var="enumEstado"
-                                       itemLabel="#{enumEstado.nome}"
-                                       itemValue="#{enumEstado}"/>
-                    </p:selectOneMenu>
+                            <p:outputLabel value="Sexo:" for="sexo"/>
+                            <h:panelGroup>
+                                <p:selectOneMenu id="sexo" required="true" value="#{cadastroPessoaBean.pessoa.genero}">
+                                    <f:selectItem itemLabel="Selecione..."/>
+                                    <f:selectItems value="#{cadastroPessoaBean.generos}" var="enumGenero"
+                                                   itemLabel="#{enumGenero.genero}" itemValue="#{enumGenero}"/>
+                                </p:selectOneMenu>
+                                <p:message for="sexo"/>
+                            </h:panelGroup>
 
-                    <p:outputLabel value="Cidade:" for="cidade"/>
-                    <p:inputText id="cidade" value="#{cadastroPessoaBean.endereco.cidade}" required="true" size="80"/>
+                        </p:panelGrid>
+                    </p:fieldset>
 
-                    <p:outputLabel value="Logradouro:" for="logradouro"/>
-                    <p:inputText id="logradouro" value="#{cadastroPessoaBean.endereco.logradouro}" required="true"/>
+                    <p:fieldset legend="Endereço" styleClass="custom-fieldset">
+                        <p:panelGrid id="enderecoPG" columns="2" styleClass="custom-panel-grid">
 
-                    <p:outputLabel value="Número:" for="numero"/>
-                    <p:inputText id="numero" value="#{cadastroPessoaBean.endereco.numero}" required="true"/>
+                            <p:outputLabel value="UF:" for="estado"/>
+                            <h:panelGroup>
+                                <p:selectOneMenu id="estado" required="true" value="#{cadastroPessoaBean.endereco.estado}">
+                                    <f:selectItem itemLabel="Selecione..."/>
+                                    <f:selectItems value="#{cadastroPessoaBean.estados}" var="enumEstado"
+                                                   itemLabel="#{enumEstado.nome}" itemValue="#{enumEstado}"/>
+                                </p:selectOneMenu>
+                                <p:message for="estado"/>
+                            </h:panelGroup>
 
-                    <p:outputLabel value="CEP:" for="cep"/>
-                    <p:inputText id="cep" value="#{cadastroPessoaBean.endereco.cep}" required="true" size="50">
-                    </p:inputText>
-                </p:panelGrid>
+                            <p:outputLabel value="Cidade:" for="cidade"/>
+                            <h:panelGroup>
+                                <p:inputText id="cidade" value="#{cadastroPessoaBean.endereco.cidade}" required="true" size="50"/>
+                                <p:message for="cidade"/>
+                            </h:panelGroup>
+
+                            <p:outputLabel value="Logradouro:" for="logradouro"/>
+                            <h:panelGroup>
+                                <p:inputText id="logradouro" value="#{cadastroPessoaBean.endereco.logradouro}" required="true"/>
+                                <p:message for="logradouro"/>
+                            </h:panelGroup>
+
+                            <p:outputLabel value="Número:" for="numero"/>
+                            <h:panelGroup>
+                                <p:inputText id="numero" value="#{cadastroPessoaBean.endereco.numero}" required="true"/>
+                                <p:message for="numero"/>
+                            </h:panelGroup>
+
+                            <p:outputLabel value="CEP:" for="cep"/>
+                            <h:panelGroup>
+                                <p:inputText id="cep" value="#{cadastroPessoaBean.endereco.cep}" required="true" size="30"/>
+                                <p:message for="cep"/>
+                            </h:panelGroup>
+
+                        </p:panelGrid>
+                    </p:fieldset>
+                </h:panelGroup>
 
                 <f:facet name="footer">
                     <p:commandButton id="salvarCB" value="Salvar" action="#{cadastroPessoaBean.salvar}"
-                                     update="pessoaPG dialogMessages pessoaDT" process="pessoaDialog"
-                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide() "/>
+                                     update="pessoaPG enderecoPG pessoaDT"
+                                     process="pessoaDialog"
+                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide()"/>
                     <p:commandButton value="Cancelar" onclick="PF('pessoaDialogWidgetVar').hide()"
                                      immediate="true" type="button"/>
                 </f:facet>
             </p:dialog>
+
+            <p:dialog id="enderecoDialog" header="DETALHES DO ENDEREÇO" widgetVar="enderecoDialogWidgetVar"
+                      modal="true" resizable="false" style="width: 500px">
+                <p:panelGrid columns="2" rendered="#{not empty cadastroPessoaBean.pessoa.endereco}"
+                             style="width:100%">
+                    <p:outputLabel value="CEP:" />
+                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.cep}" />
+
+                    <p:outputLabel value="Logradouro:" />
+                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.logradouro}" />
+
+                    <p:outputLabel value="Número:" />
+                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.numero}" />
+
+                    <p:outputLabel value="Cidade:" />
+                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.cidade}" />
+
+                    <p:outputLabel value="Estado:" />
+                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.estado.nome}" />
+                </p:panelGrid>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Fechar" onclick="PF('enderecoDialogWidgetVar').hide()"
+                                     type="button" styleClass="ui-button-secondary"/>
+                </f:facet>
+            </p:dialog>
         </h:form>
-    </ui:define>
-</ui:composition>
+    </div>
+</h:body>
+</html>

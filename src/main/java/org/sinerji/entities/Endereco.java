@@ -25,20 +25,15 @@ public class Endereco implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private EnumEstado estado;
 
-    @NotNull
     private String cidade;
 
-    @NotNull
     private String logradouro;
 
-    @NotNull
     private int numero;
 
-    @NotNull
     private String cep;
 
     @Override
