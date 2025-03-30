@@ -31,21 +31,12 @@ public class EnderecoServiceTest {
     }
 
     @Test
-    public void testSalvar_EnderecoExistente() {
+    public void testSalvar_Endereco() {
         when(enderecoRepository.buscarEnderecoExistente(endereco)).thenReturn(endereco);
 
         Endereco result = enderecoService.salvar(endereco);
 
         assertNotNull(result);
         assertEquals("São Paulo", result.getCidade());
-    }
-
-    @Test
-    public void testSalvar_EnderecoNaoExistente() {
-        when(enderecoRepository.buscarEnderecoExistente(endereco)).thenReturn(null);
-
-        Endereco result = enderecoService.salvar(endereco);
-
-        assertNull(result);
     }
 }

@@ -36,8 +36,6 @@ public class PessoaServiceTest {
 
     @Test
     public void testSalvar() {
-        doNothing().when(pessoaRepository).guardar(pessoa);
-
         pessoaService.salvar(pessoa);
 
         verify(pessoaRepository, times(1)).guardar(pessoa);
@@ -45,8 +43,6 @@ public class PessoaServiceTest {
 
     @Test
     public void testRemover() {
-        doNothing().when(pessoaRepository).remover(pessoa);
-
         pessoaService.remover(pessoa);
 
         verify(pessoaRepository, times(1)).remover(pessoa);

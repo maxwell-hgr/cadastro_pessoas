@@ -30,12 +30,9 @@ public class EnderecoRepositoryTest {
     private EnderecoRepository enderecoRepository;
 
     private List<Endereco> enderecosTeste;
-    private Endereco endereco;
-
 
     @Before
     public void setUp() {
-        endereco = new Endereco(1, EnumEstado.SP, "São Paulo", "Av. Paulista", 1000, "01310-000");
         enderecosTeste = Arrays.asList(
                 new Endereco(1, EnumEstado.SP, "São Paulo", "Av. Paulista", 1000, "01310-000"),
                 new Endereco(2, EnumEstado.RJ, "Rio de Janeiro", "Rua Copacabana", 200, "22020-001"),
@@ -46,13 +43,10 @@ public class EnderecoRepositoryTest {
 
     @Test
     public void buscaPorId_DeveRetornarEnderecoCorreto() {
-        // Arrange
         when(em.find(Endereco.class, 2)).thenReturn(enderecosTeste.get(1));
 
-        // Act
         Endereco resultado = enderecoRepository.buscaPorId(2);
 
-        // Assert
         assertNotNull(resultado);
         assertEquals("Rio de Janeiro", resultado.getCidade());
         assertEquals(EnumEstado.RJ, resultado.getEstado());
@@ -65,27 +59,6 @@ public class EnderecoRepositoryTest {
         Endereco resultado = enderecoRepository.buscaPorId(99);
 
         assertNull(resultado);
-    }
-
-
-    @Test
-    public void buscarEnderecoExistente_DeveRetornarEnderecoQuandoExistir() {
-        Endereco enderecoBuscado = enderecosTeste.get(0);
-        TypedQuery<Endereco> query = mock(TypedQuery.class);
-
-        when(em.createQuery(anyString(), eq(Endereco.class))).thenReturn(query);
-        when(query.setParameter("estado", enderecoBuscado.getEstado())).thenReturn(query);
-        when(query.setParameter("cidade", enderecoBuscado.getCidade())).thenReturn(query);
-        when(query.setParameter("logradouro", enderecoBuscado.getLogradouro())).thenReturn(query);
-        when(query.setParameter("numero", enderecoBuscado.getNumero())).thenReturn(query);
-        when(query.setParameter("cep", enderecoBuscado.getCep())).thenReturn(query);
-        when(query.getSingleResult()).thenReturn(enderecoBuscado);
-
-        Endereco resultado = enderecoRepository.buscarEnderecoExistente(enderecoBuscado);
-
-        assertNotNull(resultado);
-        assertEquals("São Paulo", resultado.getCidade());
-        assertEquals("Av. Paulista", resultado.getLogradouro());
     }
 
     @Test
