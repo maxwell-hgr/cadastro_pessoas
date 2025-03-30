@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -24,17 +25,25 @@ public class Endereco implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private EnumEstado estado;
 
+    @NotNull
     private String cidade;
+
+    @NotNull
     private String logradouro;
+
+    @NotNull
     private int numero;
+
+    @NotNull
     private String cep;
 
     @Override
     public String toString() {
-        return estado + " " + cidade + " " + logradouro + " " + numero + " " + cep;
+        return estado + " | " + cidade + " | " + logradouro + " | " + numero + " | " + cep;
     }
 
     @Override

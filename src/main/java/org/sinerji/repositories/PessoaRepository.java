@@ -1,5 +1,6 @@
 package org.sinerji.repositories;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.sinerji.entities.Pessoa;
 
@@ -10,16 +11,13 @@ import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class PessoaRepository implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Inject
     private EntityManager em;
-
-    public PessoaRepository(EntityManager em) {
-        this.em = em;
-    }
 
     public Pessoa buscaPorId(int id) {
         return em.find(Pessoa.class, id);

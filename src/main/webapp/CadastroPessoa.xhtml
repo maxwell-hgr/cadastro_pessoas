@@ -12,66 +12,95 @@
         <f:metadata>
             <f:viewAction action="#{cadastroPessoaBean.buscarTodos}"/>
         </f:metadata>
-
-        <!-- Altere o primeiro h:form para incluir a tabela também -->
         <h:form id="mainForm">
-            <p:messages autoUpdate="true"/>
+            <p:messages id="facesMessages" autoUpdate="true" closable="true"/>
 
-            <p:toolbar>
+            <p:toolbar id="toolbar" style="display: flex; justify-content: center; align-items: center;">
                 <f:facet name="left">
-                    <p:inputText placeholder="Procurar por nome ou cep" size="30" value="#{cadastroPessoaBean.query}"/>
-                    <p:commandButton value="Pesquisar" icon="pi pi-search" actionListener="#{cadastroPessoaBean.pesquisar}" update="pessoasDT"/>
+                    <p:inputText id="query" placeholder="Procurar por nome ou cep"
+                                 style="width: 300px; margin: 0 15px;"
+                                 value="#{cadastroPessoaBean.query}"/>
+                </f:facet>
 
-                    <span class="ui-separator">
-            <span class="ui-icon ui-icon-grip-dotted-vertical" />
-        </span>
+                <f:facet name="right">
+                    <p:commandButton value="Pesquisar" icon="pi pi-search"
+                                     style="margin-right: 10px"
+                                     actionListener="#{cadastroPessoaBean.pesquisar}"
+                                     update="pessoaDT facesMessages" process="@this query"/>
 
-                    <p:commandButton value="Nova" icon="pi pi-save" onclick="PF('pessoaDialogWidgetVar').show()"/>
-
-                    <span class="ui-separator">
-            <span class="ui-icon ui-icon-grip-dotted-vertical" />
-        </span>
-
-                    <p:commandButton title="Editar" icon="pi pi-file-edit" />
-                    <p:commandButton title="Excluir" icon="pi pi-exclamation-circle" style="background-color: red; border-color: red"/>
+                    <p:commandButton value="Cadastrar" icon="pi pi-save"
+                                     oncomplete="PF('pessoaDialogWidgetVar').show()"
+                                     actionListener="#{cadastroPessoaBean.inicializarInstancias}"
+                                     update="pessoaDialog" process="@this">
+                        <p:resetInput target="pessoaDialog" />
+                    </p:commandButton>
                 </f:facet>
             </p:toolbar>
 
             <p:spacer height="10px"/>
-
-            <!-- Movi a tabela para dentro do mesmo formulário -->
-            <p:dataTable id="pessoasDT" value="#{cadastroPessoaBean.todos}"
+            <p:dataTable id="pessoaDT" value="#{cadastroPessoaBean.todos}"
                          var="pessoa" emptyMessage="Nenhuma pessoa encontrada!"
                          paginator="true" rows="10" paginatorPosition="bottom">
+
                 <p:column headerText="Nome" sortBy="#{pessoa.nome}">
                     <h:outputText value="#{pessoa.nome}"/>
                 </p:column>
+
                 <p:column headerText="Data de Nascimento">
                     <h:outputText value="#{pessoa.dataNascimento}"/>
                 </p:column>
+
                 <p:column headerText="Sexo">
-                    <h:outputText value="#{pessoa.genero}"/>
+                    <h:outputText value="#{pessoa.genero.genero}"/>
                 </p:column>
-                <p:column>
+
+                <p:column headerText="Endereço">
                     <h:outputText value="Endereço"/>
                 </p:column>
-            </p:dataTable>
-        </h:form>
 
-        <!-- Mantive o diálogo em um form separado -->
-        <h:form>
-            <p:dialog header="Cadastrar Pessoa" widgetVar="pessoaDialogWidgetVar" modal="true" resizable="false" closeOnEscape="true">
-                <p:panelGrid columns="2" style="width:100%">
+                <p:column headerText="Ações" style="width:120px;text-align:center">
+                    <p:commandButton icon="pi pi-file-edit" title="Editar"
+                                     oncomplete="PF('pessoaDialogWidgetVar').show()"
+                                     update=":mainForm:pessoaDialog" process="@this">
+                        <f:setPropertyActionListener value="#{pessoa}"
+                                                     target="#{cadastroPessoaBean.pessoa}" />
+                        <f:setPropertyActionListener value="#{pessoa.endereco}"
+                                                     target="#{cadastroPessoaBean.endereco}" />
+                        <p:resetInput target=":mainForm:pessoaDialog" />
+                    </p:commandButton>
+
+                    <p:commandButton icon="pi pi-trash" title="Excluir"
+                                     style="background-color: red; border-color: red; margin-left:5px"
+                                     update="mainForm:facesMessages pessoaDT" process="@this"
+                                     actionListener="#{cadastroPessoaBean.excluir}">
+                        <f:setPropertyActionListener value="#{pessoa}"
+                                                     target="#{cadastroPessoaBean.pessoa}" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+
+            <p:dialog id="pessoaDialog" header="DADOS DE PESSOA" widgetVar="pessoaDialogWidgetVar" modal="true"
+                      resizable="false" closeOnEscape="true">
+                <p:messages id="dialogMessages"/>
+
+                <p:defaultCommand target="salvarCB" scope="pessoaDialog"/>
+
+                <p:panelGrid id="pessoaPG" columns="2" style="width:100%"
+                             rendered="#{cadastroPessoaBean.pessoa ne null}">
                     <p:outputLabel value="Nome:" for="nome"/>
-                    <p:inputText id="nome" value="#{cadastroPessoaBean.pessoa.nome}" required="true"/>
+                    <p:inputText id="nome" value="#{cadastroPessoaBean.pessoa.nome}" required="true" size="120"/>
 
                     <p:outputLabel value="Data Nasc.:" for="dataNascimento"/>
-                    <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.pessoa.dataNascimento}"
-                                pattern="dd/MM/yyyy" locale="pt_BR" required="true"/>
+                    <h:panelGroup>
+                        <p:calendar id="dataNascimento" value="#{cadastroPessoaBean.pessoa.dataNascimento}"
+                                    pattern="dd/MM/yyyy" mask="99/99/9999" required="true"
+                                    converter="dataNascimentoConverter"/>
+                        <p:message for="dataNascimento"/>
+                    </h:panelGroup>
 
                     <p:outputLabel value="Sexo:" for="sexo"/>
-                    <p:selectOneMenu id="sexo" value="#{cadastroPessoaBean.pessoa.genero}" required="true">
-                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                    <p:selectOneMenu id="sexo" required="true" value="#{cadastroPessoaBean.pessoa.genero}" size="30">
+                        <f:selectItem itemLabel="Selecione..."/>
                         <f:selectItems value="#{cadastroPessoaBean.generos}"
                                        var="enumGenero"
                                        itemLabel="#{enumGenero.genero}"
@@ -79,9 +108,8 @@
                     </p:selectOneMenu>
 
                     <p:outputLabel value="UF:" for="estado"/>
-                    <p:selectOneMenu id="estado" value="#{cadastroPessoaBean.pessoa.endereco.estado}"
-                                     required="true">
-                        <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                    <p:selectOneMenu id="estado" required="true" value="#{cadastroPessoaBean.endereco.estado}">
+                        <f:selectItem itemLabel="Selecione..."/>
                         <f:selectItems value="#{cadastroPessoaBean.estados}"
                                        var="enumEstado"
                                        itemLabel="#{enumEstado.nome}"
@@ -89,23 +117,23 @@
                     </p:selectOneMenu>
 
                     <p:outputLabel value="Cidade:" for="cidade"/>
-                    <p:inputText id="cidade" value="#{cadastroPessoaBean.pessoa.endereco.cidade}" required="true"/>
+                    <p:inputText id="cidade" value="#{cadastroPessoaBean.endereco.cidade}" required="true" size="80"/>
 
                     <p:outputLabel value="Logradouro:" for="logradouro"/>
-                    <p:inputText id="logradouro" value="#{cadastroPessoaBean.pessoa.endereco.logradouro}" required="true"/>
+                    <p:inputText id="logradouro" value="#{cadastroPessoaBean.endereco.logradouro}" required="true"/>
 
                     <p:outputLabel value="Número:" for="numero"/>
-                    <p:inputText id="numero" value="#{cadastroPessoaBean.pessoa.endereco.numero}" required="true"/>
+                    <p:inputText id="numero" value="#{cadastroPessoaBean.endereco.numero}" required="true"/>
 
                     <p:outputLabel value="CEP:" for="cep"/>
-                    <p:inputText id="cep" value="#{cadastroPessoaBean.pessoa.endereco.cep}" required="true">
+                    <p:inputText id="cep" value="#{cadastroPessoaBean.endereco.cep}" required="true" size="50">
                     </p:inputText>
                 </p:panelGrid>
 
                 <f:facet name="footer">
-                    <p:commandButton value="Salvar" action="#{cadastroPessoaBean.salvar}"
-                                     update="@form" process="@form"
-                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide()"/>
+                    <p:commandButton id="salvarCB" value="Salvar" action="#{cadastroPessoaBean.salvar}"
+                                     update="pessoaPG dialogMessages pessoaDT" process="pessoaDialog"
+                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide() "/>
                     <p:commandButton value="Cancelar" onclick="PF('pessoaDialogWidgetVar').hide()"
                                      immediate="true" type="button"/>
                 </f:facet>

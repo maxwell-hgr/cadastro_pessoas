@@ -1,13 +1,14 @@
 package org.sinerji.util;
 
-import javax.annotation.Priority;
-import javax.inject.Inject;
+import java.io.Serializable;
+
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import java.io.Serializable;
+import javax.annotation.Priority;
+import javax.inject.Inject;
 
 @Interceptor
 @Transacional
@@ -19,29 +20,31 @@ public class TransacionalInterceptor implements Serializable {
     private EntityManager entityManager;
 
     @AroundInvoke
-    public Object invoke(InvocationContext ctx) throws Exception {
-        EntityTransaction tx = entityManager.getTransaction();
+    public Object invoke(InvocationContext context) throws Exception {
+        EntityTransaction trx = entityManager.getTransaction();
         boolean criador = false;
 
-        try{
-            if(!tx.isActive()){
-                tx.begin();
-                tx.rollback();
+        try {
+            if (!trx.isActive()) {
 
-                tx.begin();
+                trx.begin();
+                trx.rollback();
+
+                trx.begin();
 
                 criador = true;
             }
 
-            return ctx.proceed();
-        } catch(Exception e){
-            if(tx != null && criador){
-                tx.rollback();
+            return context.proceed();
+        } catch (Exception e) {
+            if (trx != null && criador) {
+                trx.rollback();
             }
+
             throw e;
         } finally {
-            if(tx != null && criador){
-                tx.commit();
+            if (trx != null && trx.isActive() && criador) {
+                trx.commit();
             }
         }
     }

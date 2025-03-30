@@ -1,5 +1,6 @@
 package org.sinerji.repositories;
 
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.sinerji.entities.Endereco;
 
@@ -8,16 +9,13 @@ import javax.persistence.EntityManager;
 import java.io.Serializable;
 
 @NoArgsConstructor
+@AllArgsConstructor
 public class EnderecoRepository implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @Inject
     private EntityManager em;
-
-    public EnderecoRepository(EntityManager em) {
-        this.em = em;
-    }
 
     public Endereco buscaPorId(int id) {
         return em.find(Endereco.class, id);
