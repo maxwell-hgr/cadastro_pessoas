@@ -9,19 +9,16 @@ import org.sinerji.entities.Pessoa;
 import org.sinerji.repositories.EnderecoRepository;
 import org.sinerji.repositories.PessoaRepository;
 import org.sinerji.services.PessoaService;
-import org.sinerji.util.FacesMessages;
 
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
-
-/*
-* ao anotar com named, fazemos com que a instancia do bean fique disponível no expression language do jsf (#{})
-* a anotação de escopo define o tempo de vida dessa instância
-* */
-
+import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -35,42 +32,70 @@ public class CadastroPessoaBean implements Serializable {
     private PessoaRepository pessoaRepository;
 
     @Inject
-    private PessoaService pessoaService;
-
-    @Inject
     private EnderecoRepository enderecoRepository;
 
     @Inject
-    private FacesMessages facesMessages;
+    private PessoaService pessoaService;
+
 
     private Pessoa pessoa;
     private Endereco endereco;
 
+    private List<Endereco> enderecos;
+
     private List<Pessoa> todos;
     private String query;
 
-    public void salvar() {
-            // evitando que um endereço existente seja salvo no banco de dados como outro registro
-            Endereco existente = enderecoRepository.buscarEnderecoExistente(endereco);
-            pessoa.setEndereco(existente != null ? existente : endereco);
+    public void salvarPessoa() {
+        pessoaService.salvar(pessoa);
 
-            pessoaService.salvar(pessoa);
-
-            buscarTodos();
+        buscarTodos();
     }
 
-    public void excluir() {
+    public void salvarEndereco() {
+        pessoa = pessoaRepository.buscaPorId(pessoa.getId());
+        pessoa.addEndereco(endereco);
+
+        pessoaService.salvar(pessoa);
+
+        buscarTodos();
+    }
+
+    public void excluirPessoa(Pessoa pessoa) {
         pessoaService.remover(pessoa);
-        pessoa = null;
 
         buscarTodos();
 
-        facesMessages.info("Registro excluido com sucesso!");
+        this.pessoa = null;
+        this.endereco = null;
+
+        FacesMessage facesMessage = new FacesMessage("Registro excluido com sucesso!");
+        facesMessage.setSeverity(FacesMessage.SEVERITY_INFO);
+
+        FacesContext.getCurrentInstance().addMessage(null, facesMessage);
     }
 
+    public void excluirEndereco(Endereco endereco) {
 
-    public void inicializarInstancias() {
+        enderecoRepository.remover(endereco);
+
+        carregarEnderecos(pessoa);
+    }
+
+    public void selecionarPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
+    }
+
+    public void carregarEnderecos(Pessoa pessoa) {
+        this.pessoa = pessoaRepository.buscaPorId(pessoa.getId());
+        enderecos = this.pessoa.getEnderecos();
+    }
+
+    public void inicializarPessoa() {
         pessoa = new Pessoa();
+    }
+
+    public void inicializarEndereco() {
         endereco = new Endereco();
     }
 

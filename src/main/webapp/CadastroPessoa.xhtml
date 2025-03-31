@@ -41,7 +41,7 @@
 
                     <p:commandButton value="Cadastrar" icon="pi pi-save"
                                      oncomplete="PF('pessoaDialogWidgetVar').show()"
-                                     actionListener="#{cadastroPessoaBean.inicializarInstancias}"
+                                     actionListener="#{cadastroPessoaBean.inicializarPessoa}"
                                      update="pessoaDialog" process="@this">
                         <p:resetInput target="pessoaDialog" />
                     </p:commandButton>
@@ -65,40 +65,48 @@
                     <h:outputText value="#{pessoa.genero.genero}"/>
                 </p:column>
 
-                <p:column headerText="Endereço" style="width:120px;text-align:center">
-                    <p:commandButton icon="pi pi-map-marker" title="Ver Endereço Completo"
+                <p:column headerText="Endereços" style="width:120px;text-align:center">
+                    <p:commandButton icon="pi pi-map-marker" title="Ver Endereços"
                                      styleClass="ui-button-info"
-                                     oncomplete="PF('enderecoDialogWidgetVar').show()"
-                                     update=":mainForm:enderecoDialog">
-                        <f:setPropertyActionListener value="#{pessoa.endereco}"
-                                                     target="#{cadastroPessoaBean.pessoa.endereco}" />
+                                     action="#{cadastroPessoaBean.carregarEnderecos(pessoa)}"
+                                     actionListener="#{cadastroPessoaBean.inicializarEndereco}"
+                                     oncomplete="PF('showEnderecoDialogWidgetVar').show()"
+                                     update=":mainForm:showEnderecoDialog"
+                                     process="@this">
                     </p:commandButton>
                 </p:column>
 
                 <p:column headerText="Ações" style="width:120px;text-align:center">
+                    <p:commandButton icon="pi pi-plus" title="Adicionar endereço"
+                                     style="background-color: green"
+                                     action="#{cadastroPessoaBean.selecionarPessoa(pessoa)}"
+                                     actionListener="#{cadastroPessoaBean.inicializarEndereco}"
+                                     oncomplete="PF('enderecoDialogWidgetVar').show()"
+                                     update=":mainForm:enderecoDialog" process="@this">
+                        <p:resetInput target=":mainForm:enderecoDialog" />
+                    </p:commandButton>
+
                     <p:commandButton icon="pi pi-file-edit" title="Editar"
+                                     style="margin-left:3px"
+                                     action="#{cadastroPessoaBean.selecionarPessoa(pessoa)}"
                                      oncomplete="PF('pessoaDialogWidgetVar').show()"
                                      update=":mainForm:pessoaDialog" process="@this">
-                        <f:setPropertyActionListener value="#{pessoa}"
-                                                     target="#{cadastroPessoaBean.pessoa}" />
                         <p:resetInput target=":mainForm:pessoaDialog" />
                     </p:commandButton>
 
-                    <p:commandButton icon="pi pi-trash" title="Excluir"
-                                     style="background-color: red; border-color: red; margin-left:5px"
-                                     update=":mainForm:facesMessages :mainForm:pessoaDT"
-                                     action="#{cadastroPessoaBean.excluir}"
-                                     process="@this">
-                        <f:setPropertyActionListener value="#{pessoa}"
-                                                     target="#{cadastroPessoaBean.pessoa}" />
+                    <p:commandButton
+                            icon="pi pi-trash"
+                            title="Excluir"
+                            style="background-color: red; border-color: red; margin-left:3px"
+                            action="#{cadastroPessoaBean.excluirPessoa(pessoa)}"
+                            update=":mainForm:facesMessages :mainForm:pessoaDT"
+                            process="@this">
                     </p:commandButton>
                 </p:column>
             </p:dataTable>
 
             <p:dialog id="pessoaDialog" header="DADOS DE PESSOA" widgetVar="pessoaDialogWidgetVar" modal="true"
                       resizable="false" closeOnEscape="true" styleClass="custom-dialog">
-
-                <p:growl id="growl" showDetail="true" life="5000" autoUpdate="true"/>
 
                 <p:defaultCommand target="salvarCB" scope="pessoaDialog"/>
 
@@ -127,24 +135,29 @@
                                     <f:selectItems value="#{cadastroPessoaBean.generos}" var="enumGenero"
                                                    itemLabel="#{enumGenero.genero}" itemValue="#{enumGenero}"/>
                                 </p:selectOneMenu>
-                                <p:message for="sexo"/>
                             </h:panelGroup>
-
                         </p:panelGrid>
                     </p:fieldset>
+                </h:panelGroup>
 
+                <f:facet name="footer">
+                    <p:commandButton id="salvarCB" value="Salvar" action="#{cadastroPessoaBean.salvarPessoa}"
+                                     update="pessoaPG pessoaDT"
+                                     process="pessoaDialog"
+                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide()"/>
+                    <p:commandButton value="Cancelar" onclick="PF('pessoaDialogWidgetVar').hide()"
+                                     immediate="true" type="button"/>
+                </f:facet>
+            </p:dialog>
+
+            <p:dialog id="enderecoDialog" header="ENDEREÇO" widgetVar="enderecoDialogWidgetVar" modal="true"
+                      resizable="false" closeOnEscape="true" styleClass="custom-dialog">
+
+                <p:defaultCommand target="salvarED" scope="pessoaDialog"/>
+
+                <h:panelGroup layout="block" rendered="#{cadastroPessoaBean.pessoa ne null}" styleClass="custom-container">
                     <p:fieldset legend="Endereço" styleClass="custom-fieldset">
                         <p:panelGrid id="enderecoPG" columns="2" styleClass="custom-panel-grid">
-
-                            <p:outputLabel value="UF:" for="estado"/>
-                            <h:panelGroup>
-                                <p:selectOneMenu id="estado" required="true" value="#{cadastroPessoaBean.endereco.estado}">
-                                    <f:selectItem itemLabel="Selecione..."/>
-                                    <f:selectItems value="#{cadastroPessoaBean.estados}" var="enumEstado"
-                                                   itemLabel="#{enumEstado.nome}" itemValue="#{enumEstado}"/>
-                                </p:selectOneMenu>
-                                <p:message for="estado"/>
-                            </h:panelGroup>
 
                             <p:outputLabel value="Cidade:" for="cidade"/>
                             <h:panelGroup>
@@ -170,42 +183,76 @@
                                 <p:message for="cep"/>
                             </h:panelGroup>
 
+                            <p:outputLabel value="UF:" for="estado"/>
+                            <h:panelGroup>
+                                <p:selectOneMenu id="estado" required="true"
+                                                 value="#{cadastroPessoaBean.endereco.estado}">
+                                    <f:selectItem itemLabel="Selecione..." itemValue="#{null}"/>
+                                    <f:selectItems value="#{cadastroPessoaBean.estados}"
+                                                   var="enumEstado"
+                                                   itemLabel="#{enumEstado.nome}"
+                                                   itemValue="#{enumEstado}"/>
+                                    <p:ajax event="change" update="@this"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+
                         </p:panelGrid>
                     </p:fieldset>
                 </h:panelGroup>
 
                 <f:facet name="footer">
-                    <p:commandButton id="salvarCB" value="Salvar" action="#{cadastroPessoaBean.salvar}"
-                                     update="pessoaPG enderecoPG pessoaDT"
-                                     process="pessoaDialog"
-                                     oncomplete="if(!args.validationFailed) PF('pessoaDialogWidgetVar').hide()"/>
-                    <p:commandButton value="Cancelar" onclick="PF('pessoaDialogWidgetVar').hide()"
+                    <p:commandButton id="salvarED" value="Salvar"
+                                     action="#{cadastroPessoaBean.salvarEndereco}"
+                                     update="enderecoPG pessoaDT"
+                                     process="enderecoDialog"
+                                     oncomplete="if(!args.validationFailed) PF('enderecoDialogWidgetVar').hide()"/>
+                    <p:commandButton value="Cancelar" onclick="PF('enderecoDialogWidgetVar').hide()"
                                      immediate="true" type="button"/>
                 </f:facet>
             </p:dialog>
 
-            <p:dialog id="enderecoDialog" header="DETALHES DO ENDEREÇO" widgetVar="enderecoDialogWidgetVar"
+
+
+            <p:dialog id="showEnderecoDialog" header="ENDEREÇOS" widgetVar="showEnderecoDialogWidgetVar"
                       modal="true" resizable="false" style="width: 500px">
-                <p:panelGrid columns="2" rendered="#{not empty cadastroPessoaBean.pessoa.endereco}"
-                             style="width:100%">
-                    <p:outputLabel value="CEP:" />
-                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.cep}" />
+                <p:dataTable id="enderecoDT" value="#{cadastroPessoaBean.enderecos}"
+                             var="endereco" paginator="true" rows="5" paginatorPosition="bottom">
 
-                    <p:outputLabel value="Logradouro:" />
-                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.logradouro}" />
+                    <p:column headerText="CEP">
+                        <p:outputLabel value="#{endereco.cep}" />
+                    </p:column>
 
-                    <p:outputLabel value="Número:" />
-                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.numero}" />
+                    <p:column headerText="Logradouro">
+                        <p:outputLabel value="#{endereco.logradouro}" />
+                    </p:column>
 
-                    <p:outputLabel value="Cidade:" />
-                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.cidade}" />
+                    <p:column headerText="Número">
+                        <p:outputLabel value="#{endereco.numero}" />
+                    </p:column>
 
-                    <p:outputLabel value="Estado:" />
-                    <p:outputLabel value="#{cadastroPessoaBean.pessoa.endereco.estado.nome}" />
-                </p:panelGrid>
+                    <p:column headerText="Cidade">
+                        <p:outputLabel value="#{endereco.cidade}" />
+                    </p:column>
 
+                    <p:column headerText="Estado">
+                        <p:outputLabel value="#{endereco.estado}" />
+                    </p:column>
+                    <p:column>
+                        <p:commandButton
+                                icon="pi pi-trash"
+                                title="Excluir"
+                                style="background-color: red; border-color: red; margin-left:3px"
+                                action="#{cadastroPessoaBean.excluirEndereco(endereco)}"
+                                update=":mainForm:enderecoDT"
+                                process="@this">
+                        </p:commandButton>
+                    </p:column>
+
+
+
+                </p:dataTable>
                 <f:facet name="footer">
-                    <p:commandButton value="Fechar" onclick="PF('enderecoDialogWidgetVar').hide()"
+                    <p:commandButton value="Fechar" onclick="PF('showEnderecoDialogWidgetVar').hide()"
                                      type="button" styleClass="ui-button-secondary"/>
                 </f:facet>
             </p:dialog>

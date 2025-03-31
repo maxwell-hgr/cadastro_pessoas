@@ -1,5 +1,8 @@
 package org.sinerji.entities;
 
+import lombok.Getter;
+
+@Getter
 public enum EnumEstado {
     AC("Acre"),
     AL("Alagoas"),
@@ -29,14 +32,11 @@ public enum EnumEstado {
     SE("Sergipe"),
     TO("Tocantins");
 
-    private final String nome;
+    private String nome;
 
     EnumEstado(String nome) {
         this.nome = nome;
     }
 
-    public String getNome() {
-        return nome;
-    }
 }
 

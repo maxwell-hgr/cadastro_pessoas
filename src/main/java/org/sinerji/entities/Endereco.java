@@ -29,12 +29,13 @@ public class Endereco implements Serializable {
     private EnumEstado estado;
 
     private String cidade;
-
     private String logradouro;
-
     private int numero;
-
     private String cep;
+
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
+    private Pessoa pessoa;
 
     @Override
     public String toString() {

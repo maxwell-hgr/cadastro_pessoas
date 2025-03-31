@@ -1,5 +1,8 @@
 package org.sinerji.entities;
 
+import lombok.Getter;
+
+@Getter
 public enum EnumGenero {
     M("Masculino"),
     F("Feminino");
@@ -10,7 +13,4 @@ public enum EnumGenero {
         this.genero = genero;
     }
 
-    public String getGenero() {
-        return genero;
-    }
 }

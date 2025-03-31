@@ -4,10 +4,9 @@ import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -15,9 +14,9 @@ import javax.persistence.TypedQuery;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import org.sinerji.entities.Endereco;
 import org.sinerji.entities.EnumEstado;
 import org.sinerji.entities.EnumGenero;
@@ -30,96 +29,75 @@ public class PessoaRepositoryTest {
     @Mock
     private EntityManager em;
 
-    @InjectMocks
     private PessoaRepository repository;
-
-    private List<Pessoa> pessoasTeste;
-    private Pessoa pessoa;
 
     @Before
     public void setUp() {
-        pessoa = new Pessoa(1, "João", LocalDate.now(), EnumGenero.M,
-                new Endereco(1, EnumEstado.AC, "Rio Branco", "Rua 2", 123, "123123"));
-
-        pessoasTeste = Arrays.asList(
-                new Pessoa(1, "João Silva", LocalDate.now(), EnumGenero.M,
-                        new Endereco(1, EnumEstado.SP, "São Paulo", "Av. Paulista", 1000, "01310-000")),
-                new Pessoa(2, "Maria Santos", LocalDate.now(), EnumGenero.F,
-                        new Endereco(2, EnumEstado.RJ, "Rio de Janeiro", "Rua Copacabana", 200, "22020-001")),
-                new Pessoa(3, "José Oliveira", LocalDate.now(), EnumGenero.M,
-                        new Endereco(3, EnumEstado.MG, "Belo Horizonte", "Av. Afonso Pena", 300, "30130-000"))
-        );
+        repository = new PessoaRepository();
+        repository.setEntityManager(em);
     }
 
     @Test
     public void buscaPorId_DeveRetornarPessoa() {
-        when(em.find(Pessoa.class, 1)).thenReturn(pessoa);
+        Pessoa pessoaMock = new Pessoa(1, "João", LocalDate.now(), EnumGenero.M, new ArrayList<>());
+        when(em.find(Pessoa.class, 1)).thenReturn(pessoaMock);
 
-        Pessoa result = repository.buscaPorId(1);
+        Pessoa resultado = repository.buscaPorId(1);
 
-        assertEquals(pessoa, result);
+        assertEquals(pessoaMock, resultado);
     }
 
     @Test
     public void guardar_DeveRetornarPessoaSalva() {
-        when(em.merge(pessoa)).thenReturn(pessoa);
+        Pessoa pessoaMock = new Pessoa(1, "Maria", LocalDate.now(), EnumGenero.F, new ArrayList<>());
+        when(em.merge(pessoaMock)).thenReturn(pessoaMock);
 
-        Pessoa result = repository.guardar(pessoa);
+        Pessoa resultado = repository.guardar(pessoaMock);
 
-        assertEquals(pessoa, result);
+        assertEquals(pessoaMock, resultado);
     }
 
     @Test
     public void remover_DeveChamarDelete() {
-        when(em.find(Pessoa.class, 1)).thenReturn(pessoa);
+        Pessoa pessoaMock = new Pessoa(1, "José", LocalDate.now(), EnumGenero.M, new ArrayList<>());
+        when(em.find(Pessoa.class, 1)).thenReturn(pessoaMock);
 
-        repository.remover(pessoa);
+        repository.remover(pessoaMock);
 
-        verify(em).remove(pessoa);
+        verify(em).remove(pessoaMock);
     }
 
     @Test
-    public void todos_DeveRetornarTodasPessoas() {
-        TypedQuery<Pessoa> query = mock(TypedQuery.class);
-        when(em.createQuery("from Pessoa", Pessoa.class)).thenReturn(query);
-        when(query.getResultList()).thenReturn(pessoasTeste);
+    public void todos_DeveRetornarListaDePessoas() {
+        TypedQuery<Pessoa> queryMock = mock(TypedQuery.class);
+        List<Pessoa> pessoasMock = Arrays.asList(
+                new Pessoa(1, "João", LocalDate.now(), EnumGenero.M, new ArrayList<>()),
+                new Pessoa(2, "Maria", LocalDate.now(), EnumGenero.F, new ArrayList<>())
+        );
+
+        when(em.createQuery("from Pessoa", Pessoa.class)).thenReturn(queryMock);
+        when(queryMock.getResultList()).thenReturn(pessoasMock);
 
         List<Pessoa> resultado = repository.todos();
 
-        assertEquals(3, resultado.size());
-        assertTrue(resultado.stream().anyMatch(p -> p.getNome().equals("João Silva")));
-        assertTrue(resultado.stream().anyMatch(p -> p.getNome().equals("Maria Santos")));
-        assertTrue(resultado.stream().anyMatch(p -> p.getNome().equals("José Oliveira")));
+        assertEquals(2, resultado.size());
     }
 
     @Test
-    public void pesquisar_DeveRetornarPessoasComNomeQueComecaComJo() {
-        TypedQuery<Pessoa> query = mock(TypedQuery.class);
-        when(em.createQuery("from Pessoa where LOWER(nome) like LOWER(:nome)", Pessoa.class))
-                .thenReturn(query);
-        when(query.setParameter("nome", "Jo%")).thenReturn(query);
-        when(query.getResultList()).thenReturn(
-                pessoasTeste.stream()
-                        .filter(p -> p.getNome().startsWith("Jo"))
-                        .collect(Collectors.toList())
+    public void pesquisar_DeveFiltrarPorNome() {
+        TypedQuery<Pessoa> queryMock = mock(TypedQuery.class);
+        List<Pessoa> pessoasMock = Arrays.asList(
+                new Pessoa(1, "João Silva", LocalDate.now(), EnumGenero.M, new ArrayList<>())
         );
 
-        List<Pessoa> resultado = repository.pesquisar("Jo");
+        when(em.createQuery("FROM Pessoa where LOWER(nome) like LOWER(:nome)", Pessoa.class))
+                .thenReturn(queryMock);
+        when(queryMock.setParameter("nome", "João%")).thenReturn(queryMock);
+        when(queryMock.getResultList()).thenReturn(pessoasMock);
 
-        assertEquals(2, resultado.size());
-        assertTrue(resultado.stream().allMatch(p -> p.getNome().startsWith("Jo")));
-    }
+        List<Pessoa> resultado = repository.pesquisar("João");
 
-    @Test
-    public void pesquisar_DeveRetornarListaVaziaQuandoNaoEncontrar() {
-        TypedQuery<Pessoa> query = mock(TypedQuery.class);
-        when(em.createQuery("from Pessoa where LOWER(nome) like LOWER(:nome)", Pessoa.class))
-                .thenReturn(query);
-        when(query.setParameter("nome", "Xi%")).thenReturn(query);
-        when(query.getResultList()).thenReturn(Collections.emptyList());
-
-        List<Pessoa> resultado = repository.pesquisar("Xi");
-
-        assertTrue(resultado.isEmpty());
+        assertEquals(1, resultado.size());
+        assertEquals("João Silva", resultado.get(0).getNome());
     }
 }

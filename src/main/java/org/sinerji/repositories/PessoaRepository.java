@@ -4,19 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.sinerji.entities.Pessoa;
 
-import javax.inject.Inject;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
+@Stateless
 public class PessoaRepository implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Inject
+    @PersistenceContext
     private EntityManager em;
 
     public Pessoa buscaPorId(int id) {
@@ -37,9 +39,13 @@ public class PessoaRepository implements Serializable {
     }
 
     public List<Pessoa> pesquisar(String query){
-        String jpql = "from Pessoa where LOWER(nome) like LOWER(:nome)";
+        String jpql = "FROM Pessoa where LOWER(nome) like LOWER(:nome)";
         TypedQuery<Pessoa> consulta = em.createQuery(jpql, Pessoa.class);
         consulta.setParameter("nome", query + "%");
         return consulta.getResultList();
+    }
+
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
     }
 }

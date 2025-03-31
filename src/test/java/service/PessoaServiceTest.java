@@ -1,5 +1,7 @@
 package service;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 import org.junit.Before;
@@ -16,6 +18,8 @@ import org.sinerji.repositories.PessoaRepository;
 import org.sinerji.services.PessoaService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PessoaServiceTest {
@@ -27,11 +31,16 @@ public class PessoaServiceTest {
     private PessoaService pessoaService;
 
     private Pessoa pessoa;
+    private List<Endereco> enderecos;
 
     @Before
     public void setUp() {
-        pessoa = new Pessoa(1, "João",  LocalDate.now(), EnumGenero.M ,
-                    new Endereco(1, EnumEstado.AC, "Rio Branco", "Rua 2", 123, "123123"));
+        enderecos = new ArrayList<>();
+        enderecos.add(new Endereco(1, EnumEstado.AC, "Rio Branco", "Rua 2", 123, "123123", null));
+
+        pessoa = new Pessoa(1, "João", LocalDate.now(), EnumGenero.M, enderecos);
+
+        enderecos.forEach(e -> e.setPessoa(pessoa));
     }
 
     @Test
@@ -43,6 +52,8 @@ public class PessoaServiceTest {
 
     @Test
     public void testRemover() {
+        doNothing().when(pessoaRepository).remover(any(Pessoa.class));
+
         pessoaService.remover(pessoa);
 
         verify(pessoaRepository, times(1)).remover(pessoa);
