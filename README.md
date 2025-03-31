@@ -72,10 +72,10 @@ GRANT ALL PRIVILEGES ON DATABASE cadastro_pessoas TO app_user;
 ALTER DATABASE cadastro_pessoas OWNER TO app_user;
 ```
 
-#### 4. Configuração Completa do PostgreSQL
+#### 4. Configuração Completa do PostgreSQL no WildFly
 
 ```bash
-1. Crie a estrutura de pastas:
+1. Crie a estrutura de pastas no seu diretório WildFly:
    WildFly_HOME/modules/system/layers/base/org/postgresql/main
 
 2. Adicione:
