@@ -81,8 +81,6 @@ ALTER DATABASE cadastro_pessoas OWNER TO app_user;
 2. Adicione:
    - postgresql-42.7.2.jar (https://jdbc.postgresql.org/download/postgresql-42.7.2.jar)
    - module.xml (configuração do driver)
-
-3. Configure o datasource no standalone.xml
 ```
 
 #### Conteúdo do `module.xml`
@@ -100,7 +98,7 @@ ALTER DATABASE cadastro_pessoas OWNER TO app_user;
 </module>
 ```
 
-#### Configuração no `standalone.xml`
+#### Configuração no `standalone.xml` ({WildFly_HOME}/standalone/configuration/standalone.xml)
 ```xml
 <datasource jndi-name="java:/jboss/datasources/PostgreSQLDS" 
             pool-name="PostgreSQLDS" 
