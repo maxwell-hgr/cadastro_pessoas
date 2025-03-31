@@ -43,9 +43,12 @@ Dev:
 - WildFly 9.0.0.Final
 - PostgreSQL 16.8
 
-### Configuração do PostgreSQL + WildFly (https://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip)
+### Configuração do PostgreSQL + WildFly 
 
-#### 1. Instalação do PostgreSQL (Ubuntu/Debian)
+#### 1. Download WildFly 9.0.0.Final
+(https://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip)
+
+#### 2. Instalação do PostgreSQL (Ubuntu/Debian)
 ```bash
 # Atualize os pacotes
 sudo apt update
@@ -57,7 +60,7 @@ sudo apt install postgresql postgresql-contrib
 sudo systemctl status postgresql
 ```
 
-#### 2. Criação do Banco e Usuário
+#### 3. Criação do Banco e Usuário
 ```bash
 # Acesse o console do PostgreSQL
 sudo -u postgres psql
@@ -69,7 +72,7 @@ GRANT ALL PRIVILEGES ON DATABASE cadastro_pessoas TO app_user;
 ALTER DATABASE cadastro_pessoas OWNER TO app_user;
 ```
 
-#### 3. Configuração Completa do PostgreSQL
+#### 4. Configuração Completa do PostgreSQL
 
 ```bash
 1. Crie a estrutura de pastas:
