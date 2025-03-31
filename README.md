@@ -30,6 +30,10 @@ incluem cadastrar, editar, listar e excluir registros.
 Infra:
 - WildFly 9.0.0.Final
 - PostgreSQL 16.8
+
+Dev:
+- IntelliJ
+- Dbeaver
 ```
 
 ## 🚀 Como Executar
@@ -39,7 +43,7 @@ Infra:
 - WildFly 9.0.0.Final
 - PostgreSQL 16.8
 
-### Configuração do PostgreSQL + WildFly
+### Configuração do PostgreSQL + WildFly (https://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip)
 
 #### 1. Instalação do PostgreSQL (Ubuntu/Debian)
 ```bash
@@ -72,7 +76,7 @@ ALTER DATABASE cadastro_pessoas OWNER TO app_user;
    WildFly_HOME/modules/system/layers/base/org/postgresql/main
 
 2. Adicione:
-   - postgresql-42.7.2.jar
+   - postgresql-42.7.2.jar (https://jdbc.postgresql.org/download/postgresql-42.7.2.jar)
    - module.xml (configuração do driver)
 
 3. Configure o datasource no standalone.xml
