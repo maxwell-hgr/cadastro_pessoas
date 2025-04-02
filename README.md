@@ -1,6 +1,6 @@
-# 🚀 Cadastro de Pessoas com EJB e JSF
+# Cadastro de Pessoas com EJB e JSF
 
-## 📌 Sobre o Projeto
+## Sobre o Projeto
 Segui o modelo MVC para deixar a aplicação bem organizada e fácil de entender na avaliação. Também implementei todas as tecnologias pedidas no desafio, incluindo injeção de dependências com EJB.
 
 No começo, usei o Tomcat porque já estava mais acostumado com CDI, mas depois resolvi encarar o desafio de trabalhar com EJB no WildFly. Para a interface, segui a sugestão do desafio e escolhi o 
@@ -9,14 +9,14 @@ PrimeFaces, que tem componentes bem avançados e estilos prontos, facilitando o 
 A aplicação é um CRUD de registro de pessoas, onde cada usuário pode ter vários endereços, que são salvos como entidades no banco de dados em um relacionamento um-para-muitos. As funcionalidades 
 incluem cadastrar, editar, listar e excluir registros.
 
-## ⚙️ Funcionalidades
-- ✏️ **Cadastro completo** de pessoas com múltiplos endereços
-- 🔍 **Listagem inteligente** de registros
-- 🛠️ **Edição detalhada** de todas as informações
-- 🗑️ **Exclusão segura** de registros
-- ✅ **Validação robusta** dos dados
+## Funcionalidades
+- **Cadastro completo** de pessoas com múltiplos endereços
+- **Listagem inteligente** de registros
+- **Edição detalhada** de todas as informações
+- **Exclusão segura** de registros
+- **Validação robusta** dos dados
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ```
 - Java 8
@@ -36,7 +36,7 @@ Dev:
 - Dbeaver
 ```
 
-## 🚀 Como Executar
+## Como Executar
 
 ### Pré-requisitos
 - Java 8
@@ -136,7 +136,7 @@ cp target/cadastro_pessoasEJB.war {WildFly_HOME}/standalone/deployments/
 
 Acesse: http://localhost:8080/cadastro_pessoasEJB
 
-## 📚 Aprendizados
+## Aprendizados
 
 ```diff
 + Dominio do ciclo de vida de Managed Beans
@@ -145,7 +145,7 @@ Acesse: http://localhost:8080/cadastro_pessoasEJB
 - Desafio inicial na migração de Tomcat/CDI para WildFly/EJB
 ```
 
-## 📝 Notas Adicionais
+## Notas Adicionais
 
 Aprendi bastante sobre o tempo de vida das instâncias dos Managed Beans, especialmente sobre como manipular suas variáveis para obter o resultado esperado.
 
