@@ -8,7 +8,6 @@ import org.sinerji.entities.EnumGenero;
 import org.sinerji.entities.Pessoa;
 import org.sinerji.repositories.EnderecoRepository;
 import org.sinerji.repositories.PessoaRepository;
-import org.sinerji.services.PessoaService;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -16,9 +15,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -34,10 +31,6 @@ public class CadastroPessoaBean implements Serializable {
     @Inject
     private EnderecoRepository enderecoRepository;
 
-    @Inject
-    private PessoaService pessoaService;
-
-
     private Pessoa pessoa;
     private Endereco endereco;
 
@@ -47,7 +40,7 @@ public class CadastroPessoaBean implements Serializable {
     private String query;
 
     public void salvarPessoa() {
-        pessoaService.salvar(pessoa);
+        pessoaRepository.guardar(pessoa);
 
         buscarTodos();
     }
@@ -56,13 +49,13 @@ public class CadastroPessoaBean implements Serializable {
         pessoa = pessoaRepository.buscaPorId(pessoa.getId());
         pessoa.addEndereco(endereco);
 
-        pessoaService.salvar(pessoa);
+        pessoaRepository.guardar(pessoa);
 
         buscarTodos();
     }
 
     public void excluirPessoa(Pessoa pessoa) {
-        pessoaService.remover(pessoa);
+        pessoaRepository.remover(pessoa);
 
         buscarTodos();
 
