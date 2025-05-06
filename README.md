@@ -46,7 +46,7 @@ Dev:
 ### Configuração do PostgreSQL + WildFly 
 
 #### 1. Download WildFly 9.0.0.Final
-(https://download.jboss.org/wildfly/9.0.1.Final/wildfly-9.0.1.Final.zip)
+(https://download.jboss.org/wildfly/9.0.0.Final/wildfly-9.0.0.Final.zip)
 
 #### 2. Instalação do PostgreSQL (Ubuntu/Debian)
 ```bash
